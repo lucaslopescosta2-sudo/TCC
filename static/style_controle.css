@@ -5,3 +5,51 @@
     width: 180px;
     height: 110px;
 }
+
+
+/* Título */
+.titulo{
+    background:#192A6B;
+    color:white;
+    padding:20px;
+    border-radius:10px 10px 0 0;
+    text-align:center;
+}
+
+/* Caixa da tabela */
+.tabela-container{
+    background:white;
+    border-radius:0 0 10px 10px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+    overflow:hidden;
+}
+
+/* Cabeçalho da tabela */
+.table thead{
+    background:#192A6B;
+    color:white;
+}
+
+/* Hover das linhas */
+.table-hover tbody tr:hover{
+    background-color:#e8edff;
+}
+
+/* Botão Ver Foto */
+.btn-foto{
+    background:#192A6B;
+    color:white;
+    border:none;
+    transition:0.3s;
+}
+
+.btn-foto:hover{
+    background:#F99203;
+    color:white;
+}
+
+/* Estoque baixo */
+.baixo{
+    color:red;
+    font-weight:bold;
+}

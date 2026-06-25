@@ -27,24 +27,21 @@
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Dashboard</a>
+                        <a class="nav-link" href="/">Inicio</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Estoque</a>
+                        <a class="nav-link" href="/MOVIMENTACAO.html">Movimentação</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Entradas</a>
+                        <a class="nav-link" href="#"></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Saídas</a>
+                        <a class="nav-link" href="#">Adicionar novos itens</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Relatórios</a>
-                    </li>
 
                 </ul>
             </div>
@@ -54,98 +51,139 @@
     
     <img id="logo_navbar" src="/static/SENAI.png">
     
-   
-<nav class="navbar navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1"> Controle de Estoque</span>
+
+    <br>   
+<br>
+<div class="container">
+
+    <div class="titulo">
+        <h2>CONTROLE DE ESTOQUE - ALMOX</h2>
     </div>
-</nav>
 
+    <div class="tabela-container">
 
-<nav class="navbar navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand"> Controle de Estoque</span>
+        <table class="table table-hover table-bordered mb-0">
+
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Material</th>
+                    <th>Categoria</th>
+                    <th>Quantidade</th>
+                    <th>Foto</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>001</td>
+                    <td>Capacete de Segurança</td>
+                    <td>EPI</td>
+                    <td>25</td>
+                    <td>
+                        <button class="btn btn-foto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#foto1">
+                            Ver Foto
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>002</td>
+                    <td>Luva de Proteção</td>
+                    <td>EPI</td>
+                    <td class="baixo">4</td>
+                    <td>
+                        <button class="btn btn-foto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#foto2">
+                            Ver Foto
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>003</td>
+                    <td>Parafuso M8</td>
+                    <td>Ferragens</td>
+                    <td>150</td>
+                    <td>
+                        <button class="btn btn-foto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#foto3">
+                            Ver Foto
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
     </div>
-</nav>
-
-<div class="container mt-4">
-
-    <h2>Itens em Estoque</h2>
-
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Código</th>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Local</th>
-                <th>Foto</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            <tr>
-                <td>001</td>
-                <td>Mouse USB</td>
-                <td>25</td>
-                <td>Prateleira A</td>
-                <td>
-                    <button class="btn btn-primary"
-                    onclick="mostrarFoto('https://via.placeholder.com/500x300?text=Mouse+USB')">
-                    Ver Foto
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>002</td>
-                <td>Teclado</td>
-                <td>15</td>
-                <td>Prateleira B</td>
-                <td>
-                    <button class="btn btn-primary"
-                    onclick="mostrarFoto('https://via.placeholder.com/500x300?text=Teclado')">
-                    Ver Foto
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>003</td>
-                <td>Monitor</td>
-                <td>10</td>
-                <td>Prateleira C</td>
-                <td>
-                    <button class="btn btn-primary"
-                    onclick="mostrarFoto('https://via.placeholder.com/500x300?text=Monitor')">
-                    Ver Foto
-                    </button>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
 
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="fotoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<!-- FOTO 1 -->
+<div class="modal fade" id="foto1" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Foto do Produto</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">Capacete de Segurança</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body text-center">
-                <img id="imagemProduto" src="" class="img-fluid rounded">
+                <img src="https://via.placeholder.com/500x300?text=Capacete"
+                class="img-fluid rounded">
             </div>
 
         </div>
     </div>
 </div>
+
+<!-- FOTO 2 -->
+<div class="modal fade" id="foto2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Luva de Proteção</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img src="https://via.placeholder.com/500x300?text=Luva"
+                class="img-fluid rounded">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FOTO 3 -->
+<div class="modal fade" id="foto3" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Parafuso M8</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img src="https://via.placeholder.com/500x300?text=Parafuso+M8"
+                class="img-fluid rounded">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
