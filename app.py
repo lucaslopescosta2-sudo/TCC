@@ -6,14 +6,17 @@ app = Flask(__name__)
 def LOGIN():
     return render_template('LOGIN.html')
 
-@app.route('/CONTROLE.html')
+@app.route('/controle')
 def CONTROLE():
     return render_template('CONTROLE.html')
 
-@app.route('/MOVIMENTACAO.html')
+@app.route('/movimentacao')
 def MOVIMENTACAO():
     return render_template('MOVIMENTACAO.html')
 
+@app.route('/adicionar')
+def ADICIONAR():
+    return render_template('ADICIONAR.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
