@@ -1,6 +1,13 @@
 /* ==========================
    COR DE FUNDO DA PÁGINA
 ========================== */
+#logo_navbar{
+    position: absolute;
+    top: -25px;
+    left: 100px;
+    width: 180px;
+    height: 110px;
+}
 
 body{
     background-color: #f4f4f4;
