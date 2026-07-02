@@ -71,66 +71,39 @@
 
     <div class="tabela-container">
 
-        <table class="table table-hover table-bordered mb-0">
+        <table class="table table-hover table-bordered mb-0" style="text-align: center !important;">
 
             <thead>
                 <tr>
-                    <th>Código</th>
-                    <th>Material</th>
-                    <th>Categoria</th>
-                    <th>Quantidade</th>
-                    <th>Foto</th>
+                    <th>CÓDIGO</th>
+                    <th>MATERIAL</th>
+                    <th>CATEGORIA</th>
+                    <th>QUANTIDADE</th>
+                    <th>PREÇO R$</th>
+                    <th>FOTO</th>
                 </tr>
             </thead>
 
-            <tbody>
-
-                <tr>
-                    <td>001</td>
-                    <td>Capacete de Segurança</td>
-                    <td>EPI</td>
-                    <td>25</td>
-                    <td>
-                        <button class="btn btn-foto"
-                        data-bs-toggle="modal"
-                        data-bs-target="#foto1">
-                            Ver Foto
-                        </button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>002</td>
-                    <td>Luva de Proteção</td>
-                    <td>EPI</td>
-                    <td>4</td>
-                    <td>
-                        <button class="btn btn-foto"
-                        data-bs-toggle="modal"
-                        data-bs-target="#foto2">
-                            Ver Foto
-                        </button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>003</td>
-                    <td>Parafuso M8</td>
-                    <td>Ferragens</td>
-                    <td>150</td>
-                    <td>
-                        <button class="btn btn-foto"
-                        data-bs-toggle="modal"
-                        data-bs-target="#foto3">
-                            Ver Foto
-                        </button>
-                    </td>
-                </tr>
-
-            </tbody>
+        {% for item in resultado %}
+        <tr>
+            <td scope="col">{{item[0]}}</td>
+            <td scope="col">{{item[1]}}</td>
+            <td scope="col">{{item[6]}}</td>
+            <td scope="col">{{item[2]}}</td>
+            <td scope="col">{{item[4]}}</td>
+            <td scope="col"><button type="button" class="btn btn-foto" onclick="mostrar_foto('{{item[7]}}')">Foto</button></td>
+        </tr>
+        {%endfor%}
 
         </table>
 
+        <script>
+            function mostrar_foto(argumento){
+                swal.fire({
+                imageUrl: argumento,
+                });
+            }
+        </script>
     </div>
 
 </div>

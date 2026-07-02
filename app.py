@@ -45,7 +45,19 @@ def CONTROLE():
 
             resultado = cursor.fetchall()
 
-            return render_template('CONTROLE.html')
+    conexao = mysql.connector.connect(
+        host = 'localhost',
+        password = 'root',
+        user = 'root',
+        database = 'db_almox'
+)
+
+    cursor = conexao.cursor()
+    cursor.execute("SELECT * FROM estoque")
+
+    resultado = cursor
+        
+    return render_template('CONTROLE.html', resultado=resultado)
 
 
 @app.route('/movimentacao')

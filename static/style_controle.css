@@ -36,12 +36,27 @@
 }
 
 /* Botão Ver Foto */
-.btn-foto{
-    background:#192A6B;
-    color:white;
-    border:none;
-    transition:0.3s;
+.btn-foto {
+    background-color: #192A6B;
+    color: white;
+    border: 1px solid #192A6B;
+    transition: 0.3s;
 }
+
+.btn-foto:hover {
+    background-color: #F99203;
+    border-color: #F99203;
+    color: white;
+}
+
+.btn-foto:focus,
+.btn-foto:active {
+    background-color: #F99203 ;
+    border-color: #F99203 ;
+    color: white ;
+    box-shadow: none;
+}
+
 
 .btn-foto:hover{
     background:#F99203;
