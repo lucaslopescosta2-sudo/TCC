@@ -11,7 +11,6 @@
     <link rel="icon" href="static/download.png">
 </head>
 <body>
-  
 <br>
 <br>
 <div id= "objeto1" <div class="card p-4 shadow text-white" style="width: 100%; max-width: 400px; border-radius: 15px; background-color: #192A6B; border: none;">
@@ -47,6 +46,15 @@
 </div>
 <img id="fotinho" src="static/senai.png">
 
+<script>
+window.onload = function () {
+    Swal.fire({
+        title: 'Oops...',
+        text: 'Credenciais inválidas!.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+}
 </script>
 </body>
 </html>

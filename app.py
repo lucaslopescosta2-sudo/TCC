@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import mysql.connector
+import bcrypt
 
 app = Flask(__name__)
 
@@ -19,6 +20,10 @@ def LOGIN():
         
     return render_template('LOGIN.html')
 
+@app.route('/login_invalido')
+def LOGIN_invalido():
+    return render_template('LOGIN_invalido.html')
+
 @app.route('/controle', methods=['POST', 'GET'])
 def CONTROLE():
 
@@ -35,27 +40,21 @@ def CONTROLE():
     print(usuario_digitado)
 
     if resultado is None:
-        return "Usuario inexistente"
+        return render_template('LOGIN_invalido.html')
     
     if resultado is not None:
-        if senha_digitada == resultado[1]:
+
+        login_valido = bcrypt.checkpw(senha_digitada.encode('utf-8'), resultado[1].encode('utf-8'))
+        
+        if login_valido:
             conexao = obter_conexao()
             cursor = conexao.cursor()
             cursor.execute("select * from estoque")
 
             resultado = cursor.fetchall()
-
-    conexao = mysql.connector.connect(
-        host = 'localhost',
-        password = 'root',
-        user = 'root',
-        database = 'db_almox'
-)
-
-    cursor = conexao.cursor()
-    cursor.execute("SELECT * FROM estoque")
-
-    resultado = cursor
+        
+        else:
+            return render_template('LOGIN_invalido.html')
         
     return render_template('CONTROLE.html', resultado=resultado)
 
