@@ -1,171 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONTROLE DE ESTOQUE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="static/style_controle.css">
-    <link rel="icon" href="static/download.png">
+
+    <title>Controle de Estoque</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        body{
+            background:#f5f5f5;
+        }
+
+        #logo_navbar{
+            width:180px;
+            display:block;
+            margin:20px auto;
+        }
+
+        .titulo{
+            background:#192A6B;
+            color:white;
+            padding:15px;
+            text-align:center;
+            border-radius:10px 10px 0 0;
+        }
+
+        .table img{
+            width:70px;
+            height:70px;
+            object-fit:cover;
+            border-radius:8px;
+        }
+
+        .card{
+            border:none;
+            border-radius:10px;
+        }
+
+    </style>
+
 </head>
+
 <body>
 
-   
-   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow" style="background-color: #192A6B !important;">
-        <div class="container">
-
-
-            <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#menu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav ms-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Inicio</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Estoque</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/movimentacao">Movimentação</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/adicionar">Adicionar novos itens</a>
-                    </li>
-
-
-                </ul>
-            </div>
-
-        </div>
-    </nav>
-    
-    <img id="logo_navbar" src="/static/SENAI.png">
-    
-
-    <br>   
-<br>
-
-
-
-
-
-
-
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow"
+style="background-color:#192A6B !important;">
 
 <div class="container">
 
-    <div class="titulo">
-        <h2>CONTROLE DE ESTOQUE - ALMOX</h2>
-    </div>
+<button
+class="navbar-toggler"
+type="button"
+data-bs-toggle="collapse"
+data-bs-target="#menu">
 
-    <div class="tabela-container">
+<span class="navbar-toggler-icon"></span>
 
-        <table class="table table-hover table-bordered mb-0" style="text-align: center !important;">
+</button>
 
-            <thead>
-                <tr>
-                    <th>CÓDIGO</th>
-                    <th>MATERIAL</th>
-                    <th>CATEGORIA</th>
-                    <th>QUANTIDADE</th>
-                    <th>PREÇO R$</th>
-                    <th>FOTO</th>
-                </tr>
-            </thead>
+<div class="collapse navbar-collapse" id="menu">
 
-        {% for item in resultado %}
-        <tr>
-            <td scope="col">{{item[0]}}</td>
-            <td scope="col">{{item[1]}}</td>
-            <td scope="col">{{item[6]}}</td>
-            <td scope="col">{{item[2]}}</td>
-            <td scope="col">{{item[4]}}</td>
-            <td scope="col"><button type="button" class="btn btn-foto" onclick="mostrar_foto('{{item[7]}}')">Foto</button></td>
-        </tr>
-        {%endfor%}
+<ul class="navbar-nav ms-auto">
 
-        </table>
+<li class="nav-item">
 
-        <script>
-            function mostrar_foto(argumento){
-                swal.fire({
-                imageUrl: argumento,
-                });
+<a class="nav-link" href="/">
+
+Inicio
+
+</a>
+
+</li>
+
+<li class="nav-item">
+
+<a class="nav-link active" href="/controle">
+
+Estoque
+
+</a>
+
+</li>
+
+<li class="nav-item">
+
+<a class="nav-link" href="/movimentacao">
+
+Movimentação
+
+</a>
+
+</li>
+
+<li class="nav-item">
+
+<a class="nav-link" href="/adicionar">
+
+Adicionar novos itens
+
+</a>
+
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</nav>
+
+<img
+id="logo_navbar"
+src="/static/SENAI.png">
+
+<div class="container">
+
+<div class="card shadow">
+
+<div class="titulo">
+
+<h2>
+
+CONTROLE DE ESTOQUE - ALMOX
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<input
+type="text"
+id="pesquisa"
+class="form-control"
+placeholder="Pesquisar produto..."
+onkeyup="pesquisar()">
+
+<br>
+
+<table class="table table-bordered table-hover text-center align-middle">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+
+<th>Imagem</th>
+
+<th>Produto</th>
+
+<th>Categoria</th>
+
+<th>Quantidade</th>
+
+<th>Mínimo</th>
+
+<th>Preço</th>
+
+<th>Descrição</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabela">
+    {% for item in resultado %}
+
+<tr>
+
+    <td>{{item[0]}}</td>
+
+    <td>
+
+        <img src="{{item[7]}}" alt="{{item[1]}}">
+
+    </td>
+
+    <td>
+
+        {{item[1]}}
+
+    </td>
+
+    <td>
+
+        {{item[6]}}
+
+    </td>
+
+    <td>
+
+        {% if item[2] <= item[3] %}
+
+            <span class="badge bg-danger">
+
+                {{item[2]}}
+
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-success">
+
+                {{item[2]}}
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {{item[3]}}
+
+    </td>
+
+    <td>
+
+        R$ {{ "%.2f"|format(item[4]) }}
+
+    </td>
+
+    <td>
+
+        {{item[5]}}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function pesquisar(){
+
+    let input = document.getElementById("pesquisa");
+    let filtro = input.value.toUpperCase();
+
+    let tabela = document.getElementById("tabela");
+    let linhas = tabela.getElementsByTagName("tr");
+
+    for(let i = 0; i < linhas.length; i++){
+
+        let coluna = linhas[i].getElementsByTagName("td")[2];
+
+        if(coluna){
+
+            let texto = coluna.textContent || coluna.innerText;
+
+            if(texto.toUpperCase().indexOf(filtro) > -1){
+
+                linhas[i].style.display = "";
+
+            }else{
+
+                linhas[i].style.display = "none";
+
             }
-        </script>
-    </div>
 
-</div>
+        }
 
-<!-- FOTO 1 -->
-<div class="modal fade" id="foto1" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    }
 
-            <div class="modal-header">
-                <h5 class="modal-title">Capacete de Segurança</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+}
 
-            <div class="modal-body text-center">
-                <img src="https://via.placeholder.com/500x300?text=Capacete"
-                class="img-fluid rounded">
-            </div>
+</script>
 
-        </div>
-    </div>
-</div>
-
-<!-- FOTO 2 -->
-<div class="modal fade" id="foto2" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Luva de Proteção</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <img src="https://via.placeholder.com/500x300?text=Luva"
-                class="img-fluid rounded">
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- FOTO 3 -->
-<div class="modal fade" id="foto3" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Parafuso M8</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <img src="https://via.placeholder.com/500x300?text=Parafuso+M8"
-                class="img-fluid rounded">
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
