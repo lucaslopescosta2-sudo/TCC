@@ -28,46 +28,57 @@ def LOGIN_INVALIDO():
     return render_template("LOGIN_invalido.html")
 
 
-@app.route('/controle', methods=["POST"])
+@app.route('/controle', methods=["POST", "GET"])
 def CONTROLE():
 
     conexao = obter_conexao()
     cursor = conexao.cursor()
 
-    usuario = request.form.get("usuario")
-    senha = request.form.get("senha")
+    if request.method == 'GET':
+        cursor.execute("SELECT * FROM estoque")
 
-    cursor.execute(
-        "SELECT usuario, senha FROM usuarios WHERE usuario=%s",
-        (usuario,)
-    )
+        produtos = cursor.fetchall()
 
-    resultado = cursor.fetchone()
+        return render_template(
+            "CONTROLE.html",
+            resultado=produtos
+        )
+    else:
 
-    if resultado is None:
-        return render_template("LOGIN_invalido.html")
+        usuario = request.form.get("usuario")
+        senha = request.form.get("senha")
 
-    senha_correta = bcrypt.checkpw(
-        senha.encode("utf-8"),
-        resultado[1].encode("utf-8")
-    )
+        cursor.execute(
+            "SELECT usuario, senha FROM usuarios WHERE usuario=%s",
+            (usuario,)
+        )
 
-    if not senha_correta:
-        return render_template("LOGIN_invalido.html")
+        resultado = cursor.fetchone()
 
-    cursor.execute("SELECT * FROM estoque")
+        if resultado is None:
+            return render_template("LOGIN_invalido.html")
 
-    produtos = cursor.fetchall()
+        senha_correta = bcrypt.checkpw(
+            senha.encode("utf-8"),
+            resultado[1].encode("utf-8")
+        )
 
-    return render_template(
-        "CONTROLE.html",
-        resultado=produtos
-    )
+        if not senha_correta:
+            return render_template("LOGIN_invalido.html")
+
+        cursor.execute("SELECT * FROM estoque")
+
+        produtos = cursor.fetchall()
+
+        return render_template(
+            "CONTROLE.html",
+            resultado=produtos
+        )
 
 
 # ---------------- ESTOQUE ---------------- #
 
-@app.route('/estoque')
+@app.route('/estoque', methods=['POST', 'GET'])
 def ESTOQUE():
 
     conexao = obter_conexao()
@@ -97,18 +108,7 @@ def MOVIMENTACAO():
     """)
     produtos = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT m.id,
-               e.nome,
-               m.tipo,
-               m.quantidade,
-               m.usuario,
-               m.data_movimentacao
-        FROM movimentacao m
-        INNER JOIN estoque e
-        ON m.produto_id = e.id
-        ORDER BY m.data_movimentacao DESC
-    """)
+    #cursor.execute()
     historico = cursor.fetchall()
 
     return render_template(

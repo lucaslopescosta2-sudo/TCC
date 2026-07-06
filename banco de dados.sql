@@ -38,7 +38,7 @@ INSERT INTO estoque (nome, quantidade_disponivel, quantidade_minima, preco, desc
 VALUES ('Chave Phillips', 20, 2, 18.90, 'para aperta','ferramenta', 'https://cdn.leroymerlin.com.br/products/chave_phillips_ph1x80mm_dexter__89680150_0001_300x300.jpg');
 
 INSERT INTO estoque (nome, quantidade_disponivel, quantidade_minima, preco, descricao, categoria, imagem) 
-VALUES ('Parafusadeira', 11, 2, 300.75, 'para aperta','ferramenta', 'https://cdn.leroymerlin.com.br/products/parafusadeira_furadeira_3_8_18v_ipfv1820_vonder_1566901668_2b3d_300x300.jpg');
+VALUES ('Parafusadeira', 11, 2, 300.75, 'para aperta','ferramenta', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1lDfl3czkr0cNGlMHlhaDziIT-ITO4Nm79glIl185Ew&s=10');
 
 INSERT INTO estoque (nome, quantidade_disponivel, quantidade_minima, preco, descricao, categoria, imagem) 
 VALUES ('Furadeira', 8, 2, 831.90, 'para furar','ferramenta', 'https://cdn.leroymerlin.com.br/products/martelete_sds_plus_820w_gbh_2_24_d_com_maleta_220v_bosch_89974934_16ac_300x300.jpg');
