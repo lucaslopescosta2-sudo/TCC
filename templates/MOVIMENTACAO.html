@@ -2,45 +2,39 @@
 <html lang="pt-br">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Movimentação</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     
-<style>
+    <style>
         body {
             background: #f4f4f4;
         }
 
-        /* 1. TRAVA A ALTURA DA NAVBAR (Não deixa ela engrossar de jeito nenhum) */
         .navbar {
             background: #192A6B !important;
-            height: 55px !important; /* Força a barra azul a ter sempre essa altura fina */
+            height: 55px !important; 
             padding: 0 !important;
             position: relative;
         }
 
         .navbar .container {
             height: 100%;
-            position: relative; /* Base para o logo se guiar */
+            position: relative; 
         }
 
-        /* 2. FAZ O LOGO FLUTUAR (Pode aumentar o height à vontade aqui) */
         #logo_navbar {
-            height: 100px !important;  /* <- AUMENTE OU DIMINUA AQUI O TAMANHO DO LOGO */
+            height: 100px !important;  
             width: auto !important;
             display: block !important;
-            
             position: absolute !important;
             top: 50% !important;
-            transform: translateY(-50%) !important; /* Centraliza verticalmente na marra */
-            z-index: 9999 !important; /* Garante que fica por cima de tudo */
+            transform: translateY(-50%) !important; 
+            z-index: 9999 !important; 
         }
 
-        /* Garante que o link do logo não quebre o layout */
         .brand-container {
             position: relative;
             height: 100%;
@@ -49,11 +43,10 @@
             align-items: center;
         }
 
-        /* Alinha os textos do menu perfeitamente dentro da barra fina */
         .nav-link {
             color: white !important;
             font-weight: 500;
-            line-height: 55px !important; /* Mesma altura da navbar para centralizar o texto */
+            line-height: 55px !important; 
             padding-top: 0 !important;
             padding-bottom: 0 !important;
         }
@@ -62,7 +55,6 @@
             color: #F99203 !important;
         }
 
-        /* Resto do seu estilo do painel e tabela */
         .titulo {
             background: #192A6B;
             color: white;
@@ -77,13 +69,6 @@
             border-radius: 10px;
         }
 
-        .table img {
-            width: 65px;
-            height: 65px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
         .badge {
             font-size: 15px;
         }
@@ -92,11 +77,8 @@
 
 <body class="bg-light">
 
-    <!-- NAVBAR -->
-
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
         <div class="container">
-            
             <div class="brand-container">
                 <a class="navbar-brand m-0 p-0" href="/controle">
                     <img id="logo_navbar" src="/static/SENAI.png" alt="SENAI Logo">
@@ -113,10 +95,10 @@
                         <a class="nav-link" href="/">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/controle">Estoque</a>
+                        <a class="nav-link" href="/controle">Estoque</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/movimentacao">Movimentação</a>
+                        <a class="nav-link active" href="/movimentacao">Movimentação</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/adicionar">Adicionar novos itens</a>
@@ -129,216 +111,95 @@
     <div class="container mt-4">
 
         <div class="card shadow">
-
-            <div class="card-header text-white"
-                style="background:#192A6B;">
-
-                <h3 class="text-center">
-                    NOVA MOVIMENTAÇÃO
-                </h3>
-
+            <div class="card-header text-white" style="background:#192A6B;">
+                <h3 class="text-center m-0 py-1">NOVA MOVIMENTAÇÃO</h3>
             </div>
 
-            <div class="card-body">
-
+            <div class="card-body p-4">
                 <form action="/salvar_movimentacao" method="POST">
-
-                    <div class="row">
+                    <div class="row align-items-end">
 
                         <div class="col-md-4">
-
-                            <label class="form-label">
-
-                                Produto
-
-                            </label>
-
-                            <select class="form-select"
-                                name="produto">
-
+                            <label class="form-label fw-bold">Produto</label>
+                            <select class="form-select" name="produto" required>
+                                <option value="" disabled selected>Selecione um produto...</option>
                                 {% for produto in produtos %}
-
-                                <option value="{{produto[0]}}">
-
-                                    {{produto[1]}}
-                                    (Estoque:
-                                    {{produto[2]}})
-
+                                <option value="{{ produto[0] }}">
+                                    {{ produto[1] }} (Estoque: {{ produto[2] }})
                                 </option>
-
                                 {% endfor %}
-
                             </select>
-
                         </div>
 
                         <div class="col-md-3">
-
-                            <label class="form-label">
-
-                                Tipo
-
-                            </label>
-
-                            <select class="form-select"
-                                name="tipo">
-
-                                <option>Entrada</option>
-
-                                <option>Saida</option>
-
+                            <label class="form-label fw-bold">Tipo</label>
+                            <select class="form-select" name="tipo" required>
+                                <option value="Entrada">Entrada</option>
+                                <option value="Saida">Saída</option>
                             </select>
-
                         </div>
 
                         <div class="col-md-3">
-
-                            <label class="form-label">
-
-                                Quantidade
-
-                            </label>
-
-                            <input
-                                type="number"
-                                min="1"
-                                name="quantidade"
-                                class="form-control"
-                                required>
-
+                            <label class="form-label fw-bold">Quantidade</label>
+                            <input type="number" min="1" name="quantidade" class="form-control" placeholder="Ex: 5" required>
                         </div>
 
                         <div class="col-md-2 d-grid">
-
-                            <label class="form-label">
-
-                                &nbsp;
-
-                            </label>
-
-                            <button
-                                class="btn btn-success">
-
-                                Salvar
-
-                            </button>
-
+                            <button type="submit" class="btn btn-success fw-bold">Salvar</button>
                         </div>
 
                     </div>
-
                 </form>
-
             </div>
-
         </div>
 
         <br>
 
-        <div class="card shadow">
-
-            <div class="card-header text-white"
-                style="background:#192A6B;">
-
-                <h4>
-
-                    Histórico de Movimentações
-
-                </h4>
-
+        <div class="card shadow mb-5">
+            <div class="card-header text-white" style="background:#192A6B;">
+                <h4 class="m-0 py-1">Histórico de Movimentações</h4>
             </div>
 
-            <div class="card-body">
-
-                <table
-                    class="table table-bordered table-hover text-center">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Produto</th>
-
-                            <th>Tipo</th>
-
-                            <th>Quantidade</th>
-
-                            <th>Usuário</th>
-
-                            <th>Data</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for item in historico %}
-
-                        <tr>
-
-                            <td>
-
-                                {{item[1]}}
-
-                            </td>
-
-                            <td>
-
-                                {% if item[2]=="Entrada" %}
-
-                                <span
-                                    class="badge bg-success">
-
-                                    Entrada
-
-                                </span>
-
-                                {% else %}
-
-                                <span
-                                    class="badge bg-danger">
-
-                                    Saída
-
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {{item[3]}}
-
-                            </td>
-
-                            <td>
-
-                                {{item[4]}}
-
-                            </td>
-
-                            <td>
-
-                                {{item[5]}}
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center align-middle m-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Produto</th>
+                                <th>Tipo</th>
+                                <th>Quantidade</th>
+                                <th>Usuário</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in historico %}
+                            <tr>
+                                <td>{{ item[1] }}</td>
+                                <td>
+                                    {% if item[2] == "Entrada" %}
+                                        <span class="badge bg-success px-3">Entrada</span>
+                                    {% else %}
+                                        <span class="badge bg-danger px-3">Saída</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ item[3] }}</td>
+                                <td>{{ item[4] }}</td>
+                                <td class="text-muted small">{{ item[5] }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-muted py-4">Nenhuma movimentação registrada até o momento.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
         </div>
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
