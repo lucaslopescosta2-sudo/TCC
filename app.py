@@ -1,92 +1,208 @@
+import os
 from flask import Flask, render_template, request, redirect
 import mysql.connector
 import bcrypt
 
+
 app = Flask(__name__)
+
+
+# ==============================
+# CONFIGURAÇÃO DAS FOTOS
+# ==============================
+
+UPLOAD_FOLDER = os.path.join(
+    'static',
+    'uploads'
+)
+
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+
+
+# ==============================
+# CONEXÃO COM BANCO
+# ==============================
 
 
 def obter_conexao():
 
     return mysql.connector.connect(
+
         host="localhost",
+
         user="root",
+
         password="root",
+
         database="db_almox",
+
         port=3306
+
     )
 
 
-# ---------------- LOGIN ---------------- #
+
+# ==============================
+# LOGIN
+# ==============================
+
 
 @app.route('/')
 def LOGIN():
-    return render_template("LOGIN.html")
+
+    return render_template(
+        "LOGIN.html"
+    )
+
 
 
 @app.route('/login_invalido')
 def LOGIN_INVALIDO():
-    return render_template("LOGIN_invalido.html")
+
+    return render_template(
+        "LOGIN_invalido.html"
+    )
 
 
-@app.route('/controle', methods=["POST", "GET"])
+
+@app.route('/controle', methods=["GET","POST"])
 def CONTROLE():
 
+
     conexao = obter_conexao()
-    cursor = conexao.cursor()
 
-    if request.method == 'GET':
-        cursor.execute("SELECT * FROM estoque")
+    cursor = conexao.cursor(
+        buffered=True
+    )
 
-        produtos = cursor.fetchall()
 
-        return render_template(
-            "CONTROLE.html",
-            resultado=produtos
+
+    if request.method == "POST":
+
+
+        usuario = request.form.get(
+            "usuario"
         )
-    else:
 
-        usuario = request.form.get("usuario")
-        senha = request.form.get("senha")
+
+        senha = request.form.get(
+            "senha"
+        )
+
+
 
         cursor.execute(
-            "SELECT usuario, senha FROM usuarios WHERE usuario=%s",
+
+            """
+            SELECT usuario, senha
+            FROM usuarios
+            WHERE usuario=%s
+            """,
+
             (usuario,)
+
         )
+
+
 
         resultado = cursor.fetchone()
 
+
+
         if resultado is None:
-            return render_template("LOGIN_invalido.html")
+
+
+            cursor.close()
+
+            conexao.close()
+
+
+            return render_template(
+                "LOGIN_invalido.html"
+            )
+
+
 
         senha_correta = bcrypt.checkpw(
+
             senha.encode("utf-8"),
+
             resultado[1].encode("utf-8")
+
         )
+
+
 
         if not senha_correta:
-            return render_template("LOGIN_invalido.html")
-
-        cursor.execute("SELECT * FROM estoque")
-
-        produtos = cursor.fetchall()
-
-        return render_template(
-            "CONTROLE.html",
-            resultado=produtos
-        )
 
 
-# ---------------- ESTOQUE ---------------- #
+            cursor.close()
 
-@app.route('/estoque', methods=['POST', 'GET'])
-def ESTOQUE():
+            conexao.close()
 
-    conexao = obter_conexao()
-    cursor = conexao.cursor()
 
-    cursor.execute("SELECT * FROM estoque")
+            return render_template(
+                "LOGIN_invalido.html"
+            )
+
+
+
+    cursor.execute(
+        "SELECT * FROM estoque"
+    )
+
 
     produtos = cursor.fetchall()
+
+
+
+    cursor.close()
+
+    conexao.close()
+
+
+
+    return render_template(
+
+        "CONTROLE.html",
+
+        resultado=produtos
+
+    )
+
+# ==============================
+# ESTOQUE
+# ==============================
+
+
+@app.route('/estoque')
+def ESTOQUE():
+
+
+    conexao = obter_conexao()
+
+    cursor = conexao.cursor(
+        buffered=True
+    )
+
+
+    cursor.execute(
+        "SELECT * FROM estoque"
+    )
+
+
+    produtos = cursor.fetchall()
+
+
+
+    cursor.close()
+
+    conexao.close()
+
+
 
     return render_template(
         "CONTROLE.html",
@@ -94,96 +210,802 @@ def ESTOQUE():
     )
 
 
-# ---------------- MOVIMENTAÇÃO ---------------- #
+
+
+
+# ==============================
+# MOVIMENTAÇÃO
+# ==============================
+
 
 @app.route('/movimentacao')
 def MOVIMENTACAO():
+
+
     conexao = obter_conexao()
-    cursor = conexao.cursor()
 
-    # Puxa os dados para popular o <select> do formulário
-    cursor.execute("""
-        SELECT id, nome, quantidade_disponivel
-        FROM estoque
-    """)
-    produtos = cursor.fetchall()
-
-    # Puxa todo o histórico salvo na tabela 'historico' (ordenado pelo ID mais recente)
-    cursor.execute("""
-        SELECT id, nome_produto, tipo, quantidade, usuario, DATE_FORMAT(data_registro, '%d/%m/%Y %H:%i') 
-        FROM historico 
-        ORDER BY id DESC
-    """)
-    historico = cursor.fetchall()
-
-    cursor.close()
-    conexao.close()
-
-    return render_template(
-        "MOVIMENTACAO.html",
-        produtos=produtos,
-        historico=historico
+    cursor = conexao.cursor(
+        buffered=True
     )
 
 
-@app.route('/salvar_movimentacao', methods=['POST'])
-def SALVAR_MOVIMENTACAO():
-    id_produto = request.form.get('produto')
-    tipo_movimentacao = request.form.get('tipo')  # "Entrada" ou "Saida"
-    quantidade_movida = int(request.form.get('quantidade'))
-    
-    # Usuário temporário (como a sessão de login ainda não está ativa globalmente)
-    usuario_atual = "Almoxarife" 
 
-    conexao = obter_conexao()
-    cursor = conexao.cursor()
+    cursor.execute(
+        """
+        SELECT 
+        id,
+        nome,
+        quantidade_disponivel
 
-    try:
-        # 1. Recupera o nome e a quantidade atual do produto selecionado
-        cursor.execute("SELECT nome, quantidade_disponivel FROM estoque WHERE id = %s", (id_produto,))
-        produto = cursor.fetchone()
-        
-        if produto is None:
-            return "Produto não encontrado!", 404
-            
-        nome_produto = produto[0]
-        quantidade_atual = produto[1]
+        FROM estoque
 
-        # 2. Calcula a alteração do estoque
-        if tipo_movimentacao == "Entrada":
-            nova_quantidade = quantidade_atual + quantidade_movida
-        else:  # Saída
-            if quantidade_movida > quantidade_atual:
-                return f"Erro: Estoque insuficiente! Quantidade disponível: {quantidade_atual}", 400
-            nova_quantidade = quantidade_atual - quantidade_movida
+        ORDER BY nome
+        """
+    )
 
-        # 3. Atualiza a tabela estoque
-        cursor.execute(
-            "UPDATE estoque SET quantidade_disponivel = %s WHERE id = %s",
-            (nova_quantidade, id_produto)
+
+    produtos = cursor.fetchall()
+
+
+
+    cursor.execute(
+        """
+        SELECT
+
+        id,
+        nome_produto,
+        tipo,
+        quantidade,
+        usuario,
+
+        DATE_FORMAT(
+            data_registro,
+            '%d/%m/%Y %H:%i'
         )
 
-        # 4. Grava no Histórico de Movimentações usando NOW() para carregar a data/hora atual
-        cursor.execute("""
-            INSERT INTO historico (nome_produto, tipo, quantidade, usuario, data_registro) 
-            VALUES (%s, %s, %s, %s, NOW())
-        """, (nome_produto, tipo_movimentacao, quantidade_movida, usuario_atual))
+        FROM historico
 
-        # Confirma as alterações transacionais no MySQL
+        ORDER BY id DESC
+
+        """
+    )
+
+
+    historico = cursor.fetchall()
+
+
+
+    cursor.close()
+
+    conexao.close()
+
+
+
+    return render_template(
+
+        "MOVIMENTACAO.html",
+
+        produtos=produtos,
+
+        historico=historico
+
+    )
+
+
+
+
+
+# ==============================
+# SALVAR MOVIMENTAÇÃO
+# ==============================
+
+
+@app.route('/salvar_movimentacao', methods=["POST"])
+def SALVAR_MOVIMENTACAO():
+
+
+    id_produto = request.form.get(
+        "produto"
+    )
+
+
+    tipo = request.form.get(
+        "tipo"
+    )
+
+
+    quantidade = int(
+        request.form.get(
+            "quantidade"
+        )
+    )
+
+
+
+    usuario = "Administrador"
+
+
+
+    conexao = obter_conexao()
+
+    cursor = conexao.cursor(
+        buffered=True
+    )
+
+
+
+    try:
+
+
+        cursor.execute(
+            """
+            SELECT 
+            nome,
+            quantidade_disponivel
+
+            FROM estoque
+
+            WHERE id=%s
+
+            """,
+
+            (id_produto,)
+        )
+
+
+
+        produto = cursor.fetchone()
+
+
+
+        if produto is None:
+
+            return "Produto não encontrado"
+
+
+
+        nome_produto = produto[0]
+
+        estoque_atual = produto[1]
+
+
+
+
+        if tipo == "Entrada":
+
+
+            novo_estoque = (
+                estoque_atual + quantidade
+            )
+
+
+        else:
+
+
+            if quantidade > estoque_atual:
+
+
+                return (
+                    f"Estoque insuficiente. "
+                    f"Disponível: {estoque_atual}"
+                )
+
+
+
+            novo_estoque = (
+                estoque_atual - quantidade
+            )
+
+
+
+
+        cursor.execute(
+
+            """
+            UPDATE estoque
+
+            SET quantidade_disponivel=%s
+
+            WHERE id=%s
+
+            """,
+
+            (
+                novo_estoque,
+                id_produto
+            )
+
+        )
+
+
+
+
+        cursor.execute(
+
+            """
+            INSERT INTO historico
+
+            (
+            nome_produto,
+            tipo,
+            quantidade,
+            usuario,
+            data_registro
+            )
+
+
+            VALUES
+
+            (%s,%s,%s,%s,NOW())
+
+            """,
+
+            (
+                nome_produto,
+                tipo,
+                quantidade,
+                usuario
+            )
+
+        )
+
+
+
         conexao.commit()
 
-    except Exception as e:
+
+
+    except Exception as erro:
+
+
         conexao.rollback()
-        return f"Erro na base de dados: {str(e)}", 500
+
+
+        return f"Erro no banco: {erro}"
+
+
+
     finally:
+
+
         cursor.close()
+
         conexao.close()
 
-    # Redireciona de volta para recarregar as tabelas atualizadas na tela de movimentação
-    return redirect('/movimentacao')
 
 
-# ---------------- EXECUTAR ---------------- #
+    return redirect(
+        "/movimentacao"
+    )
+
+# ==============================
+# ADICIONAR NOVOS ITENS
+# ==============================
+
+
+@app.route('/adicionar', methods=["GET","POST"])
+def ADICIONAR():
+
+
+    if request.method == "POST":
+
+
+        nome = request.form.get(
+            "produto"
+        )
+
+
+        categoria = request.form.get(
+            "categoria"
+        )
+
+
+        quantidade = request.form.get(
+            "quantidade"
+        )
+
+
+        quantidade_minima = request.form.get(
+            "minimo"
+        )
+
+
+        preco = request.form.get(
+            "preco"
+        )
+
+
+        descricao = request.form.get(
+            "descricao"
+        )
+
+
+
+        # Corrigir preço com vírgula
+
+        if preco:
+
+            preco = preco.replace(
+                ",",
+                "."
+            )
+
+
+
+
+        # ==============================
+        # FOTO DO PRODUTO
+        # ==============================
+
+
+        foto = request.files.get(
+            "foto"
+        )
+
+
+
+        imagem = (
+            "https://encrypted-tbn0.gstatic.com/"
+            "images?q=tbn:ANd9GcT1lD3czkr0cNGl"
+            "MHlhaDziIT-ITO4Nm79glIl185Ew&s=10"
+        )
+
+
+
+        if foto and foto.filename != "":
+
+
+            nome_foto = foto.filename
+
+
+
+            caminho_foto = os.path.join(
+
+                UPLOAD_FOLDER,
+
+                nome_foto
+
+            )
+
+
+
+            foto.save(
+                caminho_foto
+            )
+
+
+
+            imagem = (
+                f"/static/uploads/{nome_foto}"
+            )
+
+
+
+
+
+
+        conexao = obter_conexao()
+
+        cursor = conexao.cursor(
+            buffered=True
+        )
+
+
+
+        try:
+
+
+            cursor.execute(
+
+                """
+
+                INSERT INTO estoque
+
+                (
+
+                nome,
+
+                quantidade_disponivel,
+
+                quantidade_minima,
+
+                preco,
+
+                descricao,
+
+                categoria,
+
+                imagem
+
+                )
+
+
+                VALUES
+
+                (%s,%s,%s,%s,%s,%s,%s)
+
+                """,
+
+
+                (
+
+                nome,
+
+                quantidade,
+
+                quantidade_minima,
+
+                preco,
+
+                descricao,
+
+                categoria,
+
+                imagem
+
+                )
+
+            )
+
+
+
+            conexao.commit()
+
+
+
+        except Exception as erro:
+
+
+            conexao.rollback()
+
+
+            return (
+                f"Erro ao adicionar produto: {erro}"
+            )
+
+
+
+        finally:
+
+
+            cursor.close()
+
+            conexao.close()
+
+
+
+
+        return redirect(
+            "/controle"
+        )
+
+
+
+
+    return render_template(
+        "ADICIONAR.html"
+    )
+
+# ==============================
+# USUÁRIOS
+# ==============================
+
+
+@app.route('/usuarios')
+def USUARIOS():
+
+
+    conexao = obter_conexao()
+
+    cursor = conexao.cursor(
+        buffered=True
+    )
+
+
+
+    cursor.execute(
+
+        """
+
+        SELECT
+
+        id,
+
+        usuario,
+
+        senha,
+
+        permissao
+
+
+        FROM usuarios
+
+
+        ORDER BY id
+
+        """
+
+    )
+
+
+
+    usuarios = cursor.fetchall()
+
+
+
+    cursor.close()
+
+    conexao.close()
+
+
+
+    return render_template(
+
+        "USUARIOS.html",
+
+        usuarios=usuarios
+
+    )
+
+
+
+
+
+# ==============================
+# CADASTRAR USUÁRIO
+# ==============================
+
+
+@app.route(
+    '/cadastrar_usuario',
+    methods=["POST"]
+)
+def CADASTRAR_USUARIO():
+
+
+    usuario = request.form.get(
+        "usuario"
+    )
+
+
+    senha = request.form.get(
+        "senha"
+    )
+
+
+    permissao = request.form.get(
+        "permissao"
+    )
+
+
+
+    conexao = obter_conexao()
+
+    cursor = conexao.cursor(
+        buffered=True
+    )
+
+
+
+    try:
+
+
+        # Verifica se já existe
+
+        cursor.execute(
+
+            """
+
+            SELECT id
+
+            FROM usuarios
+
+            WHERE usuario=%s
+
+            """,
+
+            (usuario,)
+
+        )
+
+
+
+        existe = cursor.fetchone()
+
+
+
+        if existe:
+
+
+            cursor.close()
+
+            conexao.close()
+
+
+            return (
+                "Usuário já cadastrado!"
+            )
+
+
+
+
+        # Criptografa senha
+
+        senha_hash = bcrypt.hashpw(
+
+            senha.encode("utf-8"),
+
+            bcrypt.gensalt()
+
+        ).decode("utf-8")
+
+
+
+
+
+
+        cursor.execute(
+
+            """
+
+            INSERT INTO usuarios
+
+            (
+
+            usuario,
+
+            senha,
+
+            permissao
+
+            )
+
+
+            VALUES
+
+            (%s,%s,%s)
+
+            """,
+
+
+            (
+
+            usuario,
+
+            senha_hash,
+
+            permissao
+
+            )
+
+        )
+
+
+
+        conexao.commit()
+
+
+
+    except Exception as erro:
+
+
+        conexao.rollback()
+
+
+        return (
+            f"Erro ao cadastrar usuário: {erro}"
+        )
+
+
+
+    finally:
+
+
+        cursor.close()
+
+        conexao.close()
+
+
+
+
+    return redirect(
+        "/usuarios"
+    )
+
+
+
+
+
+
+# ==============================
+# EXCLUIR USUÁRIO
+# ==============================
+
+
+@app.route(
+    '/excluir_usuario/<int:id>'
+)
+def EXCLUIR_USUARIO(id):
+
+
+    conexao = obter_conexao()
+
+    cursor = conexao.cursor()
+
+
+
+    try:
+
+
+        cursor.execute(
+
+            """
+
+            DELETE FROM usuarios
+
+            WHERE id=%s
+
+            """,
+
+            (id,)
+
+        )
+
+
+        conexao.commit()
+
+
+
+    except Exception as erro:
+
+
+        conexao.rollback()
+
+
+        return (
+            f"Erro ao excluir usuário: {erro}"
+        )
+
+
+
+    finally:
+
+
+        cursor.close()
+
+        conexao.close()
+
+
+
+
+    return redirect(
+        "/usuarios"
+    )
+
+# ==============================
+# EDITAR USUÁRIO
+# ==============================
+
+
+@app.route('/editar_usuario/<int:id>')
+def EDITAR_USUARIO(id):
+
+    return (
+        "Editar usuário em desenvolvimento."
+    )
+
+
+
+
+
+# ==============================
+# EXECUTAR SISTEMA
+# ==============================
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+
+    app.run(
+        debug=True
+    )

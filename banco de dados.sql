@@ -18,6 +18,26 @@ CREATE TABLE usuarios(
     senha VARCHAR(100) NOT NULL,
     permissao VARCHAR(100)
     );
+    
+    USE db_almox;
+
+CREATE TABLE IF NOT EXISTS historico (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_produto VARCHAR(255) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,          -- 'Entrada' ou 'Saida'
+    quantidade INT NOT NULL,
+    usuario VARCHAR(100) NOT NULL,
+    data_registro DATETIME NOT NULL     -- Vai receber a data e hora do NOW()
+);
+
+CREATE TABLE gerenciar_usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(100) NOT NULL,
+    funcao VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 INSERT INTO usuarios (usuario, senha) 
 VALUES ('eduardo@gmail.com','$2a$12$fmIM8ozrPC4qHgqX92DzceDCMURchR.bk9uUzWjETY0mtkIhGIfVS');
