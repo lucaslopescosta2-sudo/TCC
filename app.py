@@ -983,16 +983,59 @@ def EXCLUIR_USUARIO(id):
     )
 
 # ==============================
-# EDITAR USUÁRIO
+# EDITAR USUÁRIO (ATUALIZADA)
 # ==============================
 
 
-@app.route('/editar_usuario/<int:id>')
+@app.route('/editar_usuario/<int:id>', methods=["GET", "POST"])
 def EDITAR_USUARIO(id):
+    conexao = obter_conexao()
+    cursor = conexao.cursor(buffered=True)
 
-    return (
-        "Editar usuário em desenvolvimento."
-    )
+    if request.method == "POST":
+        usuario = request.form.get("usuario")
+        senha = request.form.get("senha")
+        permissao = request.form.get("permissao")
+
+        try:
+            if senha: # Se o administrador preencher uma nova senha, criptografa
+                senha_hash = bcrypt.hashpw(senha.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                cursor.execute(
+                    """
+                    UPDATE usuarios 
+                    SET usuario=%s, senha=%s, permissao=%s 
+                    WHERE id=%s
+                    """,
+                    (usuario, senha_hash, permissao, id)
+                )
+            else: # Se deixar a senha em branco, não altera a senha antiga
+                cursor.execute(
+                    """
+                    UPDATE usuarios 
+                    SET usuario=%s, permissao=%s 
+                    WHERE id=%s
+                    """,
+                    (usuario, permissao, id)
+                )
+            conexao.commit()
+            return redirect("/usuarios")
+        except Exception as erro:
+            conexao.rollback()
+            return f"Erro ao editar usuário: {erro}"
+        finally:
+            cursor.close()
+            conexao.close()
+            
+    else: # Método GET: Busca os dados atuais do usuário para exibir na tela
+        cursor.execute("SELECT id, usuario, permissao FROM usuarios WHERE id=%s", (id,))
+        dados_usuario = cursor.fetchone()
+        cursor.close()
+        conexao.close()
+
+        if dados_usuario:
+            return render_template("EDITAR.html", usuario=dados_usuario)
+            # dados_usuario[0] = id, dados_usuario[1] = e-mail, dados_usuario[2] = permissao
+        return "Usuário não encontrado."
 
 
 
@@ -1002,6 +1045,11 @@ def EDITAR_USUARIO(id):
 # EXECUTAR SISTEMA
 # ==============================
 
+#EDITAR PAGINA ======================#
+
+@app.route('/')
+def home():
+    return 'Olá, bem-vindo à minha página inicial!'
 
 if __name__ == "__main__":
 
